@@ -1,0 +1,12 @@
+---
+- hosts: localhost
+  tasks:
+    - name: Add Users
+      user:
+        name: "{{ item }}"
+        state: present
+        group: "wheel"
+        password: "{{ lookup('password', 'credentials/' + item + '/password.txt encrypt=md5_crypt') }}"
+  loop:
+    - user1
+    - user2
