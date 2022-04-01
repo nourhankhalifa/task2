@@ -1,0 +1,23 @@
+---
+- hosts: localhost
+  vars:
+    target: ""
+    target_user: ""
+    target_pass: ""
+  tasks:
+    - add_host:
+        name: "{{ target }}"
+        ansible_user: "{{ target_user }}"
+        ansible_password: "{{ target_pass }}"
+        ansible_sudo_pass: "{{ target_pass }}"
+        ansible_connection: ssh
+      become: yes
+
+- hosts: "{{ target }}"
+  connection: ssh
+  become: true
+  become_user: root
+  become_method: sudo
+  roles:
+  - tomcat
+
