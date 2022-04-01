@@ -1,0 +1,5 @@
+---
+tomcat_dir: /opt/tomcat10
+java_home: /usr/lib/jvm/jre-1.8.0-openjdk
+tomcat_url: https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.52/bin/apache-tomcat-9.0.52.tar.gz
+tomcat_port: 9095
