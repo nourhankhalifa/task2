@@ -1,0 +1,69 @@
+---    
+- name: Create a Tomcat User
+  user:
+    name: tomcat
+
+- name: Create a Tomcat Group
+  group:
+    name: tomcat
+
+- name: Install JAVA
+  yum:
+    name: java-1.8.0-openjdk
+    state: present
+- name: Create a Tomcat Directory
+  file:
+    path: "{{ tomcat_dir }}"
+    owner: tomcat
+    group: tomcat
+    mode: 755
+    recurse: yes 
+
+- name: download & unarchive tomcat10
+  unarchive:
+    src: "{{ tomcat_url }}"
+    dest: "{{ tomcat_dir }}"
+    remote_src: yes
+    extra_opts: [--strip-components=1]
+
+- name: Change ownership of tomcat directory
+  file:
+    path: "{{ tomcat_dir }}"
+    owner: tomcat
+    group: tomcat
+    mode: "u+rwx,g+rx,o=rx"
+    recurse: yes
+    state: directory
+
+- name: Copy Tomcat service from local to remote
+  template:
+    src: templates/tomcat.service.j2
+    dest: /etc/systemd/system/tomcat.service
+    mode: 0755
+    
+- name: Start and Enable Tomcat 10 on sever
+  systemd:
+    name: tomcat
+    state: started
+    daemon_reload: true
+
+- name: Change tomcat port
+  template:
+    src: templates/server.xml.j2
+    dest: "{{ tomcat_dir }}/conf/server.xml"
+
+- name: Create Application
+  file:
+    path: "{{ tomcat_dir }}/webapps/Task2"
+    state: directory
+
+- name: Deploy html page
+  copy:
+    src: templates/index.html
+    dest: "{{ tomcat_dir }}/webapps/Task2/"
+
+- name: Restart tomcat service
+  systemd:
+    name: tomcat
+    state: restarted
+    daemon_reload: true
